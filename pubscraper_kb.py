@@ -6,7 +6,7 @@ def scrape_publishers():
     base_url = "https://isbn.kb.se/sok/"
     query = "förlag"
     page = 1
-    web_app_url = 'https://script.google.com/macros/s/AKfycbyv8JuS23Olwbzv-pYxT_Wx9mboheW2kRz1Hvo40_HMgXKKCTPfh6VN-0-rvCEoeYcC/exec'  # Google Apps Script web app link
+    web_app_url = 'https://script.google.com/macros/s/AKfycbxCZGHPvOhV4xshtmU2Z0f7WNSXkCS-lYEmWIoGp8WDkMD-pmbvVJMz6KdSNf36uw1_uQ/exec'
 
     while True:
         url = f"{base_url}?query={query}&page={page}"
@@ -17,7 +17,7 @@ def scrape_publishers():
         for publisher in publishers:
             name_tag = publisher.find('h3')
             if "(Ej aktiv)" in name_tag.text:
-                continue  # Skip inactive publishers
+                continue
 
             name = name_tag.text.strip()
             email = None
@@ -26,25 +26,23 @@ def scrape_publishers():
                 if 'E-post:' in p_tag.text:
                     email = p_tag.text.replace('E-post:', '').strip()
                 if p_tag.find('a', href=True):
-                    web_tag = p_tag.find('a', href=True)
-                    web = web_tag['href']
+                    web = p_tag.find('a', href=True)['href']
 
-            if email and any(domain in email for domain in ['gmail.com', 'hotmail.com', 'outlook.com', 'live.com', 'yahoo.com', 'yahoo.se', 'telia.com', 'glocalnet.net', 'swipnet.se', 'live.se', 'bredband.net', 'brevet.nu', 'tele2.se', 'comhem.se', 'algonet.se', 'zeta.telenordia.se', 'hotmail.se', 'live.se', 'home.se', 'comhem.com', 'icloud.com', 'icloud.se']):
-                continue  # Exclude certain email domains
+            if email and any(domain in email for domain in ['gmail.com', 'hotmail.com']):
+                continue
 
-            # Create data object for POST request
             data = {
+              'type': 'KB',
               'name': name,
               'email': email,
               'web': web
             }
 
-            # Send data to Google Sheets trough the Google Apps Script web app
             requests.post(web_app_url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
 
         next_page_link = soup.find('a', href=lambda href: href and f"page={page+1}" in href)
         if not next_page_link:
-            break  # No more pages
+            break
         page += 1
 
 if __name__ == "__main__":
