@@ -44,3 +44,17 @@ function doPost(e) {
   return ContentService.createTextOutput(JSON.stringify({"result": "success"}))
     .setMimeType(ContentService.MimeType.JSON);
 }
+```
+2. Update the `web_app_url` variable in the script with the URL of your Google Apps Script web app.
+
+### Running the Script
+Execute the script by running:
+   ```sh
+   python3 pubscraper.py
+```
+
+## Modifying the Code
+The script can be easily modified to fit specific needs, such as changing the source website, adjusting the data being scraped, or altering the destination for the scraped data. To modify the list of excluded email domains, adjust the if condition that filters out certain email addresses based on their domains.
+
+## Note
+This script is a simple demonstration of web scraping and automated data entry into Google Sheets. It's intended for educational and non-commercial use, and users should ensure they have permission to scrape the website in question and comply with any relevant terms of service.
