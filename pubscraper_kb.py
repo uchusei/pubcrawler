@@ -28,7 +28,7 @@ def scrape_publishers():
                 if p_tag.find('a', href=True):
                     web = p_tag.find('a', href=True)['href']
 
-            if email and any(domain in email for domain in ['gmail.com', 'hotmail.com']):
+            if email and any(domain in email for domain in ['gmail.com', 'hotmail.com', 'outlook.com', 'live.com', 'yahoo.com', 'yahoo.se', 'telia.com', 'glocalnet.net', 'swipnet.se', 'live.se', 'bredband.net', 'brevet.nu', 'tele2.se', 'comhem.se', 'algonet.se', 'zeta.telenordia.se', 'hotmail.se', 'live.se', 'home.se', 'comhem.com', 'icloud.com', 'icloud.se']):
                 continue
 
             data = {
