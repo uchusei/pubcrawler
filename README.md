@@ -50,7 +50,7 @@ function doPost(e) {
 ### Running the Script
 Execute the script by running:
    ```sh
-   python3 pubscraper_isbn_kb.py
+   python3 pubscraper.py
 ```
 
 ## Modifying the Code
