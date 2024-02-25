@@ -6,7 +6,7 @@ def scrape_publishers():
     base_url = "https://isbn.kb.se/sok/"
     query = "förlag"
     page = 1
-    web_app_url = 'https://script.google.com/macros/s/AKfycbxCZGHPvOhV4xshtmU2Z0f7WNSXkCS-lYEmWIoGp8WDkMD-pmbvVJMz6KdSNf36uw1_uQ/exec'
+    web_app_url = 'web_app_url'
 
     while True:
         url = f"{base_url}?query={query}&page={page}"
