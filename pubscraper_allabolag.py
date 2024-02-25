@@ -16,7 +16,7 @@ def accept_cookies(driver):
         pass
 
 def send_to_google_sheets(name):
-    url = 'https://script.google.com/macros/s/AKfycbxCZGHPvOhV4xshtmU2Z0f7WNSXkCS-lYEmWIoGp8WDkMD-pmbvVJMz6KdSNf36uw1_uQ/exec'
+    url = 'web_app_url'
     headers = {'Content-Type': 'application/json'}
     data = {'type': 'Allabolag', 'name': name}
     try:
