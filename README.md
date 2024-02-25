@@ -1,60 +1,76 @@
 # PubScraper
 
-PubScraper is a simple Python script designed to scrape publisher information from the Swedish ISBN database website (https://isbn.kb.se/sok/). The script navigates through the website, page by page, collecting information about publishers, including their names, email addresses, and websites, and then sends this data to a specified Google Sheet via a Google Apps Script web app for easy storage and access.
+The PubScraper currently consists of two Python scripts designed for web scraping publisher information from distinct sources: the Swedish ISBN database and the Allabolag.se website. These scripts automate the collection of data such as publisher names, email addresses, and websites, and then forward this information to a Google Sheet via a Google Apps Script web app. This approach simplifies data extraction and management.
+
+## Overview
+
+- `pubscraper_kb.py`: Scrapes publisher information from the Swedish ISBN database (https://isbn.kb.se/sok/), focusing on active publishers and filtering out certain email domains.
+- `pubscraper_allabolag.py`: Extracts company names from the Allabolag.se website, specifically targeting the book publishing sector.
 
 ## Technologies Used
 
-- Python 3: The core programming language used for the script.
-- Beautiful Soup: A Python library for parsing HTML and XML documents. It's used to extract the data from the web pages.
-- Requests: A Python library used to make HTTP requests. This is used for both scraping the website and sending data to the Google Apps Script web app.
-- Google Sheets and Google Apps Script: For storing the scraped data in an accessible and easy-to-manage format.
+- **Python 3**: The primary programming language for the scripts.
+- **Beautiful Soup**: Utilized for parsing HTML documents, facilitating the extraction of data from web pages.
+- **Selenium WebDriver**: Employed for automating web browser interaction in `pubscraper_allabolag.py`, enabling the scraping of JavaScript-rendered content.
+- **Requests**: A library for making HTTP requests, used to send scraped data to the Google Apps Script web app and to fetch web pages in `pubscraper_kb.py`.
+- **Google Sheets and Google Apps Script**: Serve as the backend for storing the scraped data, offering an accessible and manageable format.
 
 ## Getting Started
 
-To use PubScraper, follow these steps:
-
 ### Prerequisites
 
-- Python 3 installed on your machine.
-- Pip (Python package installer) for installing the necessary Python libraries.
-- Access to Google Sheets and the ability to create a Google Apps Script web app.
+- Ensure Python 3 is installed on your system.
+- Have pip available for installing Python libraries.
+- A Google account with access to Google Sheets and the ability to create Google Apps Script web apps.
 
 ### Installation
 
-1. Clone the repository to your local machine:
-   ```sh
-   git clone https://github.com/uchusei/pubscraper.git
-
-2. Navigate to the cloned repository:
-   ```sh
-   cd pubscraper
-   
-3. Install the required Python libraries:
-   ```sh
-   pip install beautifulsoup4 requests
+1. Clone the repository:
+```sh
+git clone https://github.com/uchusei/pubscraper.git
+```
+2. Navigate to the directory:
+```sh
+cd pubscraper
+```
+3. Install required libraries:
+```sh
+pip install beautifulsoup4 selenium requests
+```
 
 ### Configuration
 
-1. Create a Google Apps Script web app following the instructions provided in the Google Apps Script documentation. The script should be designed to accept POST requests and write the data to a Google Sheet. Example:
+1. Create a Google Apps Script web app that can accept POST requests and write the received data into a Google Sheet. The script could look something like this:
 ```javascript
 function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Scraping');
-  var data = JSON.parse(e.postData.contents);
-  sheet.appendRow([data.name, data.email, data.web]);
+  var postData = JSON.parse(e.postData.contents);
+  var sheetName = postData.type === 'KB' ? 'Scraping KB' : 'Scraping Allabolag';
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  
+  if(postData.type === 'KB') {
+    sheet.appendRow([postData.name, postData.email, postData.web]);
+  } else if(postData.type === 'Allabolag') {
+    sheet.appendRow([postData.name]);
+  }
+  
   return ContentService.createTextOutput(JSON.stringify({"result": "success"}))
     .setMimeType(ContentService.MimeType.JSON);
 }
 ```
-2. Update the `web_app_url` variable in the script with the URL of your Google Apps Script web app.
+Update the `web_app_url` in both Python scripts to match the URL of your deployed Google Apps Script web app.
 
-### Running the Script
-Execute the script by running:
-   ```sh
-   python3 pubscraper_kb.py
+### Running the Scripts
+
+To run the scripts and start the scraping process:
+```sh
+python3 pubscraper_kb.py
+python3 pubscraper_allabolag.py
 ```
 
-## Modifying the Code
-The script can be easily modified to fit specific needs, such as changing the source website, adjusting the data being scraped, or altering the destination for the scraped data. To modify the list of excluded email domains, adjust the if condition that filters out certain email addresses based on their domains.
+## Customization
+
+Both scripts and the Google Apps Script can be modified to meet specific requirements, like changing the data source, the data being scraped, or the destination Google Sheet. For instance, you can adjust the list of excluded email domains in pubscraper_kb.py by modifying the relevant condition.
 
 ## Note
-This script is a simple demonstration of web scraping and automated data entry into Google Sheets. It's intended for educational and non-commercial use, and users should ensure they have permission to scrape the website in question and comply with any relevant terms of service.
+
+This project is intended for educational and non-commercial use. Users should ensure they are allowed to scrape the chosen websites and comply with any applicable terms of service or legal restrictions.
